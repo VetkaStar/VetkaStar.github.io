@@ -5,6 +5,8 @@ on:
     paths:
       - 'index.html'
       - 'landing-assets/**'
+      - 'robots.txt'
+      - 'sitemap.xml'
       - 'vels/**'
       - '.github/workflows/pages.yml'
   schedule:
@@ -41,6 +43,7 @@ jobs:
       - name: Prepare site
         run: |
           cp index.html public/index.html
+          cp robots.txt sitemap.xml public/
           cp -a landing-assets public/landing-assets
           mkdir -p public/vels
           cp vels/index.html public/vels/index.html
