@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'index.html'
+      - 'landing-assets/**'
       - 'vels/**'
       - '.github/workflows/pages.yml'
   schedule:
@@ -40,6 +41,7 @@ jobs:
       - name: Prepare site
         run: |
           cp index.html public/index.html
+          cp -a landing-assets public/landing-assets
           mkdir -p public/vels
           cp vels/index.html public/vels/index.html
       - uses: actions/upload-pages-artifact@v3
