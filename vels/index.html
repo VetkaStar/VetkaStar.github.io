@@ -3,10 +3,56 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=https://vels-vetkastar.tw1.ru/">
-  <title>Переход к дашборду</title>
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>ProcureAI - планирование закупок</title>
+  <style>
+    html, body, iframe { width: 100%; height: 100%; margin: 0; border: 0; }
+    iframe { display: block; }
+  </style>
 </head>
 <body>
-  <p>Переходим к дашборду. Если переход не произошёл, <a href="https://vels-vetkastar.tw1.ru/">откройте его по ссылке</a>.</p>
+  <iframe id="app" title="ProcureAI - планирование закупок"></iframe>
+  <noscript>Для работы приложения включите JavaScript.</noscript>
+  <script>
+    (function () {
+      'use strict';
+      const child = 'https://vels-vetkastar.tw1.ru';
+      const frame = document.getElementById('app');
+      let pendingHash = location.hash;
+      let restorePending = !!pendingHash;
+
+      function destination() {
+        const run = new URLSearchParams(location.search).get('run') || '';
+        const safe = /^[0-9TZ-]+[a-f0-9]{10}$/.test(run) ? '?run=' + encodeURIComponent(run) : '';
+        return child + '/' + safe + location.hash;
+      }
+      frame.src = destination();
+
+      window.addEventListener('message', function (event) {
+        if (event.origin !== child || event.source !== frame.contentWindow || !event.data || event.data.type !== 'procureai-location') return;
+        if (event.data.login) return;
+        if (restorePending && !event.data.ready) return;
+        if (restorePending) {
+          restorePending = false;
+          if (event.data.hash !== pendingHash) {
+            frame.contentWindow.postMessage({type: 'procureai-restore', hash: pendingHash}, child);
+            return;
+          }
+        }
+        const run = typeof event.data.run === 'string' && /^[0-9TZ-]+[a-f0-9]{10}$/.test(event.data.run)
+          ? '?run=' + encodeURIComponent(event.data.run) : '';
+        const hash = typeof event.data.hash === 'string' && event.data.hash.startsWith('#') &&
+          event.data.hash.length <= 2048 && !/[\x00-\x1f\x7f]/.test(event.data.hash) ? event.data.hash : '';
+        const path = '/vels/' + run + hash;
+        if (location.pathname + location.search + location.hash !== path) history.replaceState(null, '', path);
+      });
+
+      window.addEventListener('popstate', function () {
+        pendingHash = location.hash;
+        restorePending = !!pendingHash;
+        frame.src = destination();
+      });
+    })();
+  </script>
 </body>
 </html>
