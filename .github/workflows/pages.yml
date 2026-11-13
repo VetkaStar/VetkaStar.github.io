@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - 'index.html'
       - 'vels/**'
       - '.github/workflows/pages.yml'
   schedule:
