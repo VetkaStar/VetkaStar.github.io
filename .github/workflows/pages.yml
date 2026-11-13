@@ -1,6 +1,10 @@
 name: Publish VETKA applications
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'vels/**'
+      - '.github/workflows/pages.yml'
   schedule:
     - cron: '17 * * * *'
 permissions:
@@ -33,7 +37,10 @@ jobs:
           mkdir -p ../public/gridfinity-plus
           cp -a dist/site/. ../public/gridfinity-plus/
       - name: Prepare site
-        run: cp index.html public/index.html
+        run: |
+          cp index.html public/index.html
+          mkdir -p public/vels
+          cp vels/index.html public/vels/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
